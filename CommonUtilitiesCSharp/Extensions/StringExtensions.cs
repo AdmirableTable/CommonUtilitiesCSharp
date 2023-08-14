@@ -1,4 +1,4 @@
-﻿namespace CommonUtilitiesCSharp.UnitTests.Extensions
+﻿namespace CommonUtilitiesCSharp.Extensions
 {
     /// <summary>
     /// Static class containing extension methods for <see cref="string"/>.
