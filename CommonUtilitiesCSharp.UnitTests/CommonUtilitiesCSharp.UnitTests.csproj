@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CommonUtilitiesCSharp.NUnit\CommonUtilitiesCSharp.NUnit.csproj" />
     <ProjectReference Include="..\CommonUtilitiesCSharp\CommonUtilitiesCSharp.csproj" />
   </ItemGroup>
 
