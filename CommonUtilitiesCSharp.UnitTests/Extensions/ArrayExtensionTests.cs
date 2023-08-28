@@ -243,5 +243,67 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
         #endregion Select<T>(this T[,] source, Func<T, int, T> selector)
 
         #endregion
+
+        #region Cast
+        [Test]
+        public void Cast_ReturnsValidArray_ForValidCast()
+        {
+            var array = new int[,] { { 1, 2 }, { 3, 4 } };
+
+            var actual = array.Cast<int, double>();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual, Is.TypeOf<double[,]>());
+                Assert.That(ArrayTests.IsEquivalentTo2DArray(actual, new double[,] { { 1, 2 }, { 3, 4 } }), Is.True);
+            });
+        }
+
+        [Test]
+        public void Cast_ReturnsValidArray_ForCastToObject()
+        {
+            var array = new int[,] { { 1, 2 }, { 3, 4 } };
+
+            var actual = array.Cast<int, object>();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual, Is.TypeOf<object[,]>());
+                Assert.That(ArrayTests.IsEquivalentTo2DArray(actual, new object[,] { { 1, 2 }, { 3, 4 } }), Is.True);
+            });
+        }
+
+        [Test]
+        public void Cast_ReturnsEmpty_ForEmptyArray()
+        {
+            var array = new int[,] { { }, { } };
+
+            var actual = array.Cast<int, object>();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual, Is.TypeOf<object[,]>());
+                Assert.That(ArrayTests.IsEquivalentTo2DArray(actual, new object[,] { { }, { } }), Is.True);
+            });
+        }
+
+#nullable disable
+        [Test]
+        public void Cast_Throws_ForNullArray()
+        {
+            int[,] array = null;
+
+            Assert.Throws<ArgumentNullException>(() => array.Cast<int, object>());
+        }
+
+        [Test]
+        public void Cast_Throws_ForInvalidCast()
+        {
+            var array = new int[,] { { 1, 2 }, { 3, 4 } };
+
+            Assert.Throws<InvalidCastException>(() => array.Cast<int, string>());
+        }
+#nullable enable
+        #endregion Cast
     }
 }

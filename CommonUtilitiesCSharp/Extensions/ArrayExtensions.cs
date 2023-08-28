@@ -130,5 +130,34 @@
 
             return result;
         }
+
+        /// <summary>
+        /// Casts the elements of a two-dimensional <see cref="Array"/> to the specified type.
+        /// </summary>
+        /// <typeparam name="TSource">Type of items from the <paramref name="source"/> array.</typeparam>
+        /// <typeparam name="TResult">Target type to cast the items of <paramref name="source"/> to.</typeparam>
+        /// <param name="source">The <see cref="Array"/> that contains the elements to be cast to type <typeparamref name="TResult"/>.</param>
+        /// <returns>A two-dimensional <see cref="Array"/> that contains each element of the source cast to the specified type.</returns>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="source"/> is null.</exception>
+        /// <exception cref="InvalidCastException">Thrown if an item of <paramref name="source"/> could not be cast to the type <typeparamref name="TResult"/>.</exception>
+        public static TResult[,] Cast <TSource, TResult>(this TSource[,] source)
+        {
+            if (source is null) throw new ArgumentNullException(nameof(source));
+        
+            var length0 = source.GetLength(0);
+            var length1 = source.GetLength(1);
+            var result = new TResult[length0, length1];
+        
+            for (var i = 0; i < length0; i++)
+            {
+                for (var j = 0; j < length1; j++)
+                {
+                    var sourceItem = (object?)source[i, j];
+                    result[i, j] = sourceItem is null ? default! : (TResult)Convert.ChangeType(sourceItem, typeof(TResult));
+                }
+            }
+
+            return result;
+        }
     }
 }
