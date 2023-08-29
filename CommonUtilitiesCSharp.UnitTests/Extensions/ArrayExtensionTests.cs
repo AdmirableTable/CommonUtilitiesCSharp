@@ -301,7 +301,7 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
         {
             var array = new int[,] { { 1, 2 }, { 3, 4 } };
 
-            Assert.Throws<InvalidCastException>(() => array.Cast<int, string>());
+            Assert.Throws<InvalidCastException>(() => array.Cast<int, object[]>());
         }
 #nullable enable
         #endregion Cast
