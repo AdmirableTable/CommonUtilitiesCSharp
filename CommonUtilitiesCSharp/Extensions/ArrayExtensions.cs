@@ -5,6 +5,66 @@
     /// </summary>
     public static class ArrayExtensions
     {
+        /// <inheritdoc cref="AreArraysEquivalent(object[,], object[,])"/>
+        public static bool AreArraysEquivalent<T>(T[,]? array1, T[,]? array2) => AreArraysEquivalent(array1?.Cast<T, object>(), array2?.Cast<T, object>());
+
+        /// <inheritdoc cref="AreArraysEquivalent(object[,], object[,])"/>
+        public static bool AreArraysEquivalent<T>(object[,]? array1, T[,]? array2) => AreArraysEquivalent(array1, array2?.Cast<T, object>());
+
+        /// <inheritdoc cref="AreArraysEquivalent(object[,], object[,])"/>
+        public static bool AreArraysEquivalent<T>(T[,]? array1, object[,]? array2) => AreArraysEquivalent(array1?.Cast<T, object>(), array2);
+
+        /// <summary>
+        /// Tests whether two two-dimensional arrays are equivalent (all items are equal).
+        /// </summary>
+        /// <param name="array1">First array to compare.</param>
+        /// <param name="array2">Second array to compare.</param>
+        /// <returns>Returns true if all items of one array are equal to all items in the second array, or both arrays are null or empty.</returns>
+        public static bool AreArraysEquivalent(object[,]? array1, object[,]? array2)
+        {
+            if (array1 is null)
+                return array2 is null;
+
+            if (array2 is null)
+                return false;
+
+            if (array1.GetLength(0) != array2.GetLength(0) ||
+                array1.GetLength(1) != array2.GetLength(1))
+            {
+                return false;
+            }
+
+            for (int i = 0; i < array1.GetLength(0); i++)
+            {
+                for (int j = 0; j < array1.GetLength(1); j++)
+                {
+                    if (!Equals(array1[i, j], array2[i, j]))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Tests whether the source array is equivalent to the target array (all items are equal).
+        /// </summary>
+        /// <param name="source">Soruce array to compare.</param>
+        /// <param name="target">Array to compare the source against.</param>
+        /// <returns>Returns true if all items of one array are equal to all items in the second array, or both arrays are null or empty.</returns>
+        public static bool IsEquivalentTo(this object[,]? source, object[,]? target) => AreArraysEquivalent(source, target);
+
+        /// <inheritdoc cref="IsEquivalentTo(object[,], object[,])"/>
+        public static bool IsEquivalentTo<T>(this T[,]? source, T[,]? target) => AreArraysEquivalent(source, target);
+
+        /// <inheritdoc cref="IsEquivalentTo(object[,], object[,])"/>
+        public static bool IsEquivalentTo<T>(this T[,]? source, object[,]? target) => AreArraysEquivalent(source, target);
+
+        /// <inheritdoc cref="IsEquivalentTo(object[,], object[,])"/>
+        public static bool IsEquivalentTo<T>(this object[,]? source, T[,]? target) => AreArraysEquivalent(source, target);
+
         /// <summary>
         /// Returns all items from the target dimension at an index of the other dimension.
         ///
@@ -132,7 +192,7 @@
         }
 
         /// <summary>
-        /// Casts the elements of a two-dimensional <see cref="Array"/> to the specified type.
+        /// Casts the elements of two-dimensional <see cref="Array"/> to the specified type.
         /// </summary>
         /// <typeparam name="TSource">Type of items from the <paramref name="source"/> array.</typeparam>
         /// <typeparam name="TResult">Target type to cast the items of <paramref name="source"/> to.</typeparam>

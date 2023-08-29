@@ -5,6 +5,202 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
 {
     public class ArrayExtensionTests
     {
+        #region AreArraysEquivalent
+        [Test]
+        public void AreArraysEquivalent_ReturnsTrue_ForEquivalentArrays()
+        {
+            var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+            var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+
+            var actual = ArrayExtensions.AreArraysEquivalent(array1, array2);
+
+            Assert.That(actual, Is.True);
+        }
+
+        [Test]
+        public void AreArraysEquivalent_ReturnsFalse_ForNonEquivalentArrays()
+        {
+            var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+            var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 7 } };
+
+            var actual = ArrayExtensions.AreArraysEquivalent(array1, array2);
+
+            Assert.That(actual, Is.False);
+        }
+
+        [Test]
+        public void AreArraysEquivalent_ReturnsFalse_ForDifferentSizedArrays()
+        {
+            var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+            var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
+
+            var actual = ArrayExtensions.AreArraysEquivalent(array1, array2);
+
+            Assert.That(actual, Is.False);
+        }
+
+        [Test]
+        public void AreArraysEquivalent_ReturnsFalse_ForNullArray1()
+        {
+            int[,] array1 = null!;
+            var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+
+            var actual = ArrayExtensions.AreArraysEquivalent(array1, array2);
+
+            Assert.That(actual, Is.False);
+        }
+
+        [Test]
+        public void AreArraysEquivalent_ReturnsFalse_ForNullArray2()
+        {
+            var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+            int[,] array2 = null!;
+
+            var actual = ArrayExtensions.AreArraysEquivalent(array1, array2);
+
+            Assert.That(actual, Is.False);
+        }
+
+        [Test]
+        public void AreArraysEquivalent_ReturnsTrue_ForNullArrays()
+        {
+            int[,] array1 = null!;
+            int[,] array2 = null!;
+
+            var actual = ArrayExtensions.AreArraysEquivalent(array1, array2);
+
+            Assert.That(actual, Is.True);
+        }
+
+        [Test]
+        public void AreArraysEquivalent_ReturnsTrue_ForEmptyArrays()
+        {
+            var array1 = new int[,] { };
+            var array2 = new int[,] { };
+
+            var actual = ArrayExtensions.AreArraysEquivalent(array1, array2);
+
+            Assert.That(actual, Is.True);
+        }
+
+        [Test]
+        public void AreArraysEquivalent_ReturnsFalse_ForEmptyArray1()
+        {
+            var array1 = new int[,] { };
+            var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+
+            var actual = ArrayExtensions.AreArraysEquivalent(array1, array2);
+
+            Assert.That(actual, Is.False);
+        }
+
+        [Test]
+        public void AreArraysEquivalent_ReturnsFalse_ForEmptyArray2()
+        {
+            var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+            var array2 = new int[,] { };
+
+            var actual = ArrayExtensions.AreArraysEquivalent(array1, array2);
+
+            Assert.That(actual, Is.False);
+        }
+        #endregion AreArraysEquivalent
+
+        #region IsEquivalentTo
+        [Test]
+        public void IsEquivalentTo_ReturnsTrue_ForEquivalentArrays()
+        {
+            var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+            var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+
+            var actual = array1.IsEquivalentTo(array2);
+
+            Assert.That(actual, Is.True);
+        }
+
+        [Test]
+        public void IsEquivalentTo_ReturnsFalse_ForNonEquivalentArrays()
+        {
+            var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+            var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 7 } };
+
+            var actual = array1.IsEquivalentTo(array2);
+
+            Assert.That(actual, Is.False);
+        }
+        [Test]
+        public void IsEquivalentTo_ReturnsFalse_ForDifferentSizedArrays()
+        {
+            var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+            var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
+
+            var actual = array1.IsEquivalentTo(array2);
+
+            Assert.That(actual, Is.False);
+        }
+        [Test]
+        public void IsEquivalentTo_ReturnsFalse_ForNullArray1()
+        {
+            int[,] array1 = null!;
+            var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+
+            var actual = array1.IsEquivalentTo(array2);
+
+            Assert.That(actual, Is.False);
+        }
+        [Test]
+        public void IsEquivalentTo_ReturnsFalse_ForNullArray2()
+        {
+            var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+            int[,] array2 = null!;
+
+            var actual = array1.IsEquivalentTo(array2);
+
+            Assert.That(actual, Is.False);
+        }
+        [Test]
+        public void IsEquivalentTo_ReturnsTrue_ForNullArrays()
+        {
+            int[,] array1 = null!;
+            int[,] array2 = null!;
+
+            var actual = array1.IsEquivalentTo(array2);
+
+            Assert.That(actual, Is.True);
+        }
+        [Test]
+        public void IsEquivalentTo_ReturnsTrue_ForEmptyArrays()
+        {
+            var array1 = new int[,] { };
+            var array2 = new int[,] { };
+
+            var actual = array1.IsEquivalentTo(array2);
+
+            Assert.That(actual, Is.True);
+        }
+        [Test]
+        public void IsEquivalentTo_ReturnsFalse_ForEmptyArray1()
+        {
+            var array1 = new int[,] { };
+            var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+
+            var actual = array1.IsEquivalentTo(array2);
+
+            Assert.That(actual, Is.False);
+        }
+
+        [Test]
+        public void IsEquivalentTo_ReturnsFalse_ForEmptyArray2()
+        {
+            var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
+            var array2 = new int[,] { };
+
+            var actual = array1.IsEquivalentTo(array2);
+
+            Assert.That(actual, Is.False);
+        }
+        #endregion IsEquivalentTo
+
         #region GetLine
         [Test]
         public void GetLine_ReturnsValidArray_ForIndex0()
