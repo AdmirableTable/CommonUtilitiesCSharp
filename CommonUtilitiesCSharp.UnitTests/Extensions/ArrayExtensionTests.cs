@@ -1,5 +1,5 @@
 ﻿using CommonUtilitiesCSharp.Extensions;
-using CommonUtilitiesCSharp.NUnit;
+using CommonUtilitiesCSharp.NUnit.Constraints;
 
 namespace CommonUtilitiesCSharp.UnitTests.Extensions
 {
@@ -347,7 +347,7 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             Assert.Multiple(() =>
             {
                 Assert.That(actual, Is.TypeOf<int[,]>());
-                Assert.That(ArrayTests.IsEquivalentTo2DArray(actual, expected), Is.True);
+                Assert.That(actual, new IsEquivalentTo2DArrayConstraint<int>(expected));
             });
         }
 
@@ -395,7 +395,7 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             {
                 var expected = new int[,] { { 0, 1 }, { 2, 4 }, { 6, 9 } };
                 Assert.That(actual, Is.TypeOf<int[,]>());
-                Assert.That(ArrayTests.IsEquivalentTo2DArray(actual, expected), Is.True);
+                Assert.That(actual, new IsEquivalentTo2DArrayConstraint<int>(expected));
             });
         }
 
@@ -441,7 +441,7 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             Assert.Multiple(() =>
             {
                 Assert.That(actual, Is.TypeOf<double[,]>());
-                Assert.That(ArrayTests.IsEquivalentTo2DArray(actual, new double[,] { { 1, 2 }, { 3, 4 } }), Is.True);
+                Assert.That(actual, new IsEquivalentTo2DArrayConstraint<double>(new double[,] { { 1, 2 }, { 3, 4 } }));
             });
         }
 
@@ -455,7 +455,7 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             Assert.Multiple(() =>
             {
                 Assert.That(actual, Is.TypeOf<object[,]>());
-                Assert.That(ArrayTests.IsEquivalentTo2DArray(actual, new object[,] { { 1, 2 }, { 3, 4 } }), Is.True);
+                Assert.That(actual, new IsEquivalentTo2DArrayConstraint<object>(new object[,] { { 1, 2 }, { 3, 4 } }));
             });
         }
 
@@ -469,7 +469,7 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             Assert.Multiple(() =>
             {
                 Assert.That(actual, Is.TypeOf<object[,]>());
-                Assert.That(ArrayTests.IsEquivalentTo2DArray(actual, new object[,] { { }, { } }), Is.True);
+                Assert.That(actual, new IsEquivalentTo2DArrayConstraint<object>(new object[,] { { }, { } }));
             });
         }
 

@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonUtilitiesCSharp", "Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonUtilitiesCSharp.UnitTests", "CommonUtilitiesCSharp.UnitTests\CommonUtilitiesCSharp.UnitTests.csproj", "{68D72494-5A1A-43B2-B748-807013E36500}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonUtilitiesCSharp.NUnit", "CommonUtilitiesCSharp.NUnit\CommonUtilitiesCSharp.NUnit.csproj", "{C34C9ED7-D0FC-4F2A-A7A4-427FEB65D2A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonUtilitiesCSharp.NUnit", "CommonUtilitiesCSharp.NUnit\CommonUtilitiesCSharp.NUnit.csproj", "{C34C9ED7-D0FC-4F2A-A7A4-427FEB65D2A0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonUtilitiesCSharp.NUnit.UnitTests", "CommonUtilitiesCSharp.NUnit.UnitTests\CommonUtilitiesCSharp.NUnit.UnitTests.csproj", "{BE8BA0E3-E81B-4BC8-AEAA-837DD07CE86A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{C34C9ED7-D0FC-4F2A-A7A4-427FEB65D2A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C34C9ED7-D0FC-4F2A-A7A4-427FEB65D2A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C34C9ED7-D0FC-4F2A-A7A4-427FEB65D2A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE8BA0E3-E81B-4BC8-AEAA-837DD07CE86A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE8BA0E3-E81B-4BC8-AEAA-837DD07CE86A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE8BA0E3-E81B-4BC8-AEAA-837DD07CE86A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE8BA0E3-E81B-4BC8-AEAA-837DD07CE86A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
