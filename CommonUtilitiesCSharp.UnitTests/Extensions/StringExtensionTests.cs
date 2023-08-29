@@ -30,16 +30,14 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             Assert.That(result, Is.EqualTo(string.Empty));
         }
 
-#nullable disable
         [Test]
         public void Truncate_ReturnsCorrectResult_ForNullString()
         {
-            string str = null;
+            string str = null!;
             var result = str.Truncate(10);
 
             Assert.That(result, Is.Null);
         }
-#nullable enable
         #endregion Truncate
     }
 }

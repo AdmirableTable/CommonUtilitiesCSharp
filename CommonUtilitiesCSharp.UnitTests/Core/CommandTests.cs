@@ -9,29 +9,27 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
         protected abstract Command CreateCommand(Action<TCommandParameter?> execute, Predicate<TCommandParameter?> canExecute);
 
         #region Constructor
-#nullable disable
         [Test]
         public void Constructor_Throws_ForNullExecute()
         {
-            Assert.Throws<ArgumentNullException>(() => CreateCommand(null));
+            Assert.Throws<ArgumentNullException>(() => CreateCommand(null!));
         }
 
         [Test]
         public void Constructor_Throws_ForNullCanExecute()
         {
-            static void execute(TCommandParameter param) { }
+            static void execute(TCommandParameter? param) { }
 
-            Assert.Throws<ArgumentNullException>(() => CreateCommand(execute, null));
+            Assert.Throws<ArgumentNullException>(() => CreateCommand(execute, null!));
         }
 
         [Test]
         public void Constructor_Throws_ForNullExecuteWithPredicate()
         {
-            static bool canExecute(TCommandParameter param) { throw new NotSupportedException(); }
+            static bool canExecute(TCommandParameter? param) { throw new NotSupportedException(); }
 
-            Assert.Throws<ArgumentNullException>(() => CreateCommand(null, canExecute));
+            Assert.Throws<ArgumentNullException>(() => CreateCommand(null!, canExecute));
         }
-#nullable enable
         #endregion Constructor
 
         #region Execute
@@ -126,12 +124,11 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
             Assert.That(flag, Is.True);
         }
 
-#nullable disable
         [Test]
         public override void Execute_IsInvokedWithParameter_WhenParameterIsPassed()
         {
             var flag = false;
-            var command = CreateCommand(parameter => flag = (bool)parameter);
+            var command = CreateCommand(parameter => flag = (bool)parameter!);
 
             Assert.That(flag, Is.False);
 
@@ -146,11 +143,11 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
             var flag = false;
             var command = CreateCommand(parameter =>
             {
-                var parameters = (bool[])parameter;
+                var parameters = (bool[])parameter!;
                 flag = parameters[0];
             }, parameter =>
             {
-                var parameters = (bool[])parameter;
+                var parameters = (bool[])parameter!;
                 return !parameters[1];
             });
 
@@ -160,7 +157,6 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
 
             Assert.That(flag, Is.True);
         }
-#nullable enable
         #endregion Execute
 
         #region CanExecute
@@ -171,7 +167,6 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
             Assert.That(command.CanExecute(), Is.True);
         }
 
-#nullable disable
         [Test]
         public override void CanExecute_ReturnsFalse_WhenPredicateIsFalse()
         {
@@ -197,7 +192,7 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
         [Test]
         public override void CanExecute_ReturnsFalse_WhenParameterIsPassedAndPredicateIsFalse()
         {
-            var command = CreateCommand(parameter => { }, parameter => (bool)parameter);
+            var command = CreateCommand(parameter => { }, parameter => (bool)parameter!);
 
             Assert.That(command.CanExecute(false), Is.False);
         }
@@ -205,11 +200,10 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
         [Test]
         public override void CanExecute_ReturnsTrue_WhenParameterIsPassedAndPredicateIsTrue()
         {
-            var command = CreateCommand(parameter => { }, parameter => (bool)parameter);
+            var command = CreateCommand(parameter => { }, parameter => (bool)parameter!);
 
             Assert.That(command.CanExecute(true), Is.True);
         }
-#nullable enable
         #endregion CanExecute
 
         #region ConvertParameter
@@ -235,15 +229,13 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
             Assert.Throws<ArgumentException>(() => Command.ConvertParameter<string>(parameter));
         }
 
-#nullable disable
         [Test]
         public void ConvertParameter_Throws_WhenParameterIsNull()
         {
-            object parameter = null;
+            object parameter = null!;
 
             Assert.Throws<ArgumentNullException>(() => Command.ConvertParameter<string>(parameter));
         }
-#nullable enable
         #endregion ConvertParameter
     }
 
@@ -304,7 +296,6 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
             Assert.That(flag, Is.True);
         }
 
-#nullable disable
         [Test]
         public override void Execute_IsInvokedWithParameter_WhenParameterIsPassed()
         {
@@ -332,7 +323,6 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
 
             Assert.That(flag, Is.True);
         }
-#nullable enable
         #endregion Execute
 
         #region CanExecute
@@ -343,7 +333,6 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
             Assert.That(command.CanExecute("test"), Is.True);
         }
 
-#nullable disable
         [Test]
         public override void CanExecute_ReturnsFalse_WhenPredicateIsFalse()
         {
@@ -381,7 +370,6 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
 
             Assert.That(command.CanExecute("success"), Is.True);
         }
-#nullable enable
         #endregion CanExecute
     }
 }

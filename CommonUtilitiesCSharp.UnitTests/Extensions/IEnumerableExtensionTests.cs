@@ -61,11 +61,10 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             Assert.That(items, Is.EquivalentTo(Array.Empty<MockObject>()));
         }
 
-#nullable disable
         [Test]
         public void ForEach_ThrowsArgumentNullException_ForNullEnumerable()
         {
-            IEnumerable<string> items = null;
+            IEnumerable<string> items = null!;
 
             Assert.Throws<ArgumentNullException>(() => items.ForEach(item => item += "."));
         }
@@ -75,9 +74,8 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
         {
             var items = new string[] { "a", "b", "c" };
 
-            Assert.Throws<ArgumentNullException>(() => items.ForEach(null));
+            Assert.Throws<ArgumentNullException>(() => items.ForEach(null!));
         }
-#nullable enable
         #endregion ForEach
     }
 }

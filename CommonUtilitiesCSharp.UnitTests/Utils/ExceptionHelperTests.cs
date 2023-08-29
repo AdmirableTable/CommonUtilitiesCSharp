@@ -41,15 +41,13 @@ namespace CommonUtilitiesCSharp.UnitTests.Utils
             Assert.Throws<ArgumentException>(() => ExceptionHelper.CastValue<string>(value, "parameter"));
         }
 
-#nullable disable
         [Test]
         public void CastValue_Throws_ForNullValue()
         {
-            object value = null;
+            object value = null!;
 
             Assert.Throws<ArgumentException>(() => ExceptionHelper.CastValue<string>(value, "parameter"));
         }
-#nullable enable
         #endregion CastValue
     }
 }

@@ -242,15 +242,13 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             Assert.That(actual, Is.EquivalentTo(new int[] { 3 }));
         }
 
-#nullable disable
         [Test]
         public void GetLine_Throws_ForNullArray()
         {
-            int[,] array = null;
+            int[,] array = null!;
 
             Assert.Throws<ArgumentNullException>(() => array.GetLine(0, 0));
         }
-#nullable enable
         #endregion GetLine
 
         #region Select
@@ -278,11 +276,10 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             Assert.That(actual, Is.EquivalentTo(Array.Empty<int>()));
         }
 
-#nullable disable
         [Test]
         public void Select1d_Throws_ForNullArray()
         {
-            int[] array = null;
+            int[] array = null!;
 
             Assert.Throws<ArgumentNullException>(() => array.Select(i => i * 2));
         }
@@ -291,11 +288,10 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
         public void Select1d_Throws_ForNullSelector()
         {
             var array = new int[] { 1, 2, 3 };
-            Func<int, int> selector = null;
+            Func<int, int> selector = null!;
 
             Assert.Throws<ArgumentNullException>(() => array.Select(selector));
         }
-#nullable enable
         #endregion Select<T>(this T[] source, Func<T, T> selector)
 
         #region Select<T>(this T[] source, Func<T, int, T> selector)
@@ -321,11 +317,10 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             Assert.That(actual, Is.EquivalentTo(Array.Empty<int>()));
         }
 
-#nullable disable
         [Test]
         public void Select1dIndex_Throws_ForNullArray()
         {
-            int[] array = null;
+            int[] array = null!;
 
             Assert.Throws<ArgumentNullException>(() => array.Select((i, index) => i * index));
         }
@@ -334,11 +329,10 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
         public void Select1dIndex_Throws_ForNullSelector()
         {
             var array = new int[] { 1, 2, 3 };
-            Func<int, int, int> selector = null;
+            Func<int, int, int> selector = null!;
 
             Assert.Throws<ArgumentNullException>(() => array.Select(selector));
         }
-#nullable enable
         #endregion Select<T>(this T[] source, Func<T, int, T> selector)
 
         #region Select<T>(this T[,] source, Func<T, T> selector)
@@ -371,11 +365,10 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             });
         }
 
-#nullable disable
         [Test]
         public void Select2d_Throws_ForNullArray()
         {
-            int[,] array = null;
+            int[,] array = null!;
 
             Assert.Throws<ArgumentNullException>(() => array.Select(i => i * 2));
         }
@@ -384,11 +377,10 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
         public void Select2d_Throws_ForNullSelector()
         {
             var array = new int[,] { { 1, 2 }, { 2, 3 }, { 3, 4 } };
-            Func<int, int> selector = null;
+            Func<int, int> selector = null!;
 
             Assert.Throws<ArgumentNullException>(() => array.Select(selector));
         }
-#nullable enable
         #endregion Select<T>(this T[,] source, Func<T, T> selector)
 
         #region Select<T>(this T[,] source, Func<T, int, T> selector)
@@ -418,11 +410,10 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             Assert.That(actual, Is.EquivalentTo(new int[,] { { }, { }, { } }));
         }
 
-#nullable disable
         [Test]
         public void Select2dIndex_Throws_ForNullArray()
         {
-            int[,] array = null;
+            int[,] array = null!;
 
             Assert.Throws<ArgumentNullException>(() => array.Select((i, index1, index2) => i * index1 + index2));
         }
@@ -431,11 +422,10 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
         public void Select2dIndex_Throws_ForNullSelector()
         {
             var array = new int[,] { { 1, 2 }, { 2, 3 }, { 3, 4 } };
-            Func<int, int, int, int> selector = null;
+            Func<int, int, int, int> selector = null!;
 
             Assert.Throws<ArgumentNullException>(() => array.Select(selector));
         }
-#nullable enable
         #endregion Select<T>(this T[,] source, Func<T, int, T> selector)
 
         #endregion
@@ -483,11 +473,10 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             });
         }
 
-#nullable disable
         [Test]
         public void Cast_Throws_ForNullArray()
         {
-            int[,] array = null;
+            int[,] array = null!;
 
             Assert.Throws<ArgumentNullException>(() => array.Cast<int, object>());
         }
@@ -499,7 +488,6 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
 
             Assert.Throws<InvalidCastException>(() => array.Cast<int, object[]>());
         }
-#nullable enable
         #endregion Cast
     }
 }

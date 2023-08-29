@@ -54,27 +54,25 @@
             });
         }
 
-#nullable disable
         [Test]
         public void AddRange_ThrowsArgumentNullException_ForNullCollection()
         {
-            TCollectionType collection = default; // Can't be set to null because of the generic type constraint.
+            TCollectionType collection = default!; // Can't be set to null because of the generic type constraint.
             if (collection is not null) throw new Exception("This should never happen.");
 
             var items = new object[] { "a", "b", "c" };
 
-            Assert.Throws<ArgumentNullException>(() => AddRange(collection, items));
+            Assert.Throws<ArgumentNullException>(() => AddRange(collection!, items));
         }
 
         [Test]
         public void AddRange_ThrowsArgumentNullException_ForNullItems()
         {
             TCollectionType collection = CreateEmptyCollection();
-            IEnumerable<object> items = null;
+            IEnumerable<object> items = null!;
 
             Assert.Throws<ArgumentNullException>(() => AddRange(collection, items));
         }
-#nullable enable
         #endregion AddRange
     }
 }
