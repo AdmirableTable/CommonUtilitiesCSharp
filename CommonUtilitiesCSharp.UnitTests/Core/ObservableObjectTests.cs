@@ -5,9 +5,9 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
 {
     public class ObservableObjectTests
     {
-        private class MockObject : ObservableObject
+        private class MockObservableObject : ObservableObject
         {
-            public MockObject(string value)
+            public MockObservableObject(string value)
             {
                 _value = value;
             }
@@ -23,6 +23,17 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
                 }
             }
 
+            public string IndirectValue
+            {
+                get => _value;
+                set
+                {
+                    _value = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(Value));
+                }
+            }
+
             public bool HasPropertyChangedBeenCalled { get; private set; }
 
             protected override void OnPropertyChanged([CallerMemberName] string propertyName = "")
@@ -35,7 +46,7 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
         [Test]
         public void OnPropertyChanged_CanBeOverriden()
         {
-            var mockObject = new MockObject("test");
+            var mockObject = new MockObservableObject("test");
 
             Assert.That(mockObject.HasPropertyChangedBeenCalled, Is.False);
 
@@ -45,30 +56,47 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
         }
 
         [Test]
-        public void OnPropertyChanged_RaisesPropertyChangedEvent()
+        public void OnPropertyChanged_RaisesPropertyChangedEvent_WhenInvokedWithoutName()
         {
-            var mockObject = new MockObject("test");
-            var flag = false;
-            var propertyName = "";
+            var mockObject = new MockObservableObject("test");
+            var propertiesChanged = new List<string?>();
 
             mockObject.PropertyChanged += (sender, args) =>
             {
-                flag = true;
-                propertyName = args.PropertyName;
+                propertiesChanged.Add(args.PropertyName);
             };
 
-            Assert.Multiple(() =>
-            {
-                Assert.That(flag, Is.False);
-                Assert.That(propertyName, Is.EqualTo(""));
-            });
+            Assert.That(propertiesChanged, Is.Empty);
 
             mockObject.Value = "test2";
 
             Assert.Multiple(() =>
             {
-                Assert.That(flag, Is.True);
-                Assert.That(propertyName, Is.EqualTo(nameof(MockObject.Value)));
+                Assert.That(propertiesChanged, Has.Count.EqualTo(1));
+                Assert.That(propertiesChanged[0], Is.EqualTo(nameof(MockObservableObject.Value)));
+            });
+        }
+
+        [Test]
+        public void OnPropertyChanged_RaisesPropertyChangedEvent_WhenInvokedWithName()
+        {
+            var mockObject = new MockObservableObject("test");
+            var propertiesChanged = new List<string?>();
+
+            mockObject.PropertyChanged += (sender, args) =>
+            {
+                propertiesChanged.Add(args.PropertyName);
+            };
+
+            Assert.That(propertiesChanged, Is.Empty);
+
+            mockObject.IndirectValue = "test2";
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(propertiesChanged, Has.Count.EqualTo(2));
+                Assert.That(propertiesChanged[0], Is.EqualTo(nameof(MockObservableObject.IndirectValue)));
+                Assert.That(propertiesChanged[1], Is.EqualTo(nameof(MockObservableObject.Value)));
             });
         }
     }
