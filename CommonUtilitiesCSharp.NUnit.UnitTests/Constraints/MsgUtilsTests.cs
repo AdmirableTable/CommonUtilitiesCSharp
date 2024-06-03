@@ -1,6 +1,6 @@
 ﻿using CommonUtilitiesCSharp.NUnit.Constraints;
 
-namespace CommonUtilitiesCSharp.NUnit.UnitTests
+namespace CommonUtilitiesCSharp.NUnit.UnitTests.Constraints
 {
     public class MsgUtilTests
     {
