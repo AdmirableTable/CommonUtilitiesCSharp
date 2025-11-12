@@ -4,7 +4,12 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <IsTestProject>false</IsTestProject>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectCapability Remove="TestContainer" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.13.3" />
