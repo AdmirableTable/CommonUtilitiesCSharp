@@ -5,6 +5,26 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
 {
     public class ArrayExtensionTests
     {
+        private static object[,] Convert2dArray(int[,] array)
+        {
+            if (array is null)
+                return null!;
+
+            var length0 = array.GetLength(0);
+            var length1 = array.GetLength(1);
+            var result = new object[length0, length1];
+
+            for (int i = 0; i < length0; i++)
+            {
+                for (int j = 0; j < length1; j++)
+                {
+                    result[i,j] = array[i, j];
+                }
+            }
+
+            return result;
+        }
+
         #region AreArraysEquivalent
         [Test]
         public void AreArraysEquivalent_ReturnsTrue_ForEquivalentArrays()
@@ -12,9 +32,16 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
             var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
 
-            var actual = ArrayExtensions.AreArraysEquivalent(array1, array2);
-
-            Assert.That(actual, Is.True);
+            var actual1 = ArrayExtensions.AreArraysEquivalent(array1, array2);
+            var actual2 = ArrayExtensions.AreArraysEquivalent(Convert2dArray(array1), array2);
+            var actual3 = ArrayExtensions.AreArraysEquivalent(array1, Convert2dArray(array2));
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual1, Is.True);
+                Assert.That(actual2, Is.True);
+                Assert.That(actual3, Is.True);
+            });
         }
 
         [Test]
@@ -23,9 +50,16 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
             var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 7 } };
 
-            var actual = ArrayExtensions.AreArraysEquivalent(array1, array2);
+            var actual1 = ArrayExtensions.AreArraysEquivalent(array1, array2);
+            var actual2 = ArrayExtensions.AreArraysEquivalent(Convert2dArray(array1), array2);
+            var actual3 = ArrayExtensions.AreArraysEquivalent(array1, Convert2dArray(array2));
 
-            Assert.That(actual, Is.False);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual1, Is.False);
+                Assert.That(actual2, Is.False);
+                Assert.That(actual3, Is.False);
+            });
         }
 
         [Test]
@@ -34,9 +68,16 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
             var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
 
-            var actual = ArrayExtensions.AreArraysEquivalent(array1, array2);
+            var actual1 = ArrayExtensions.AreArraysEquivalent(array1, array2);
+            var actual2 = ArrayExtensions.AreArraysEquivalent(Convert2dArray(array1), array2);
+            var actual3 = ArrayExtensions.AreArraysEquivalent(array1, Convert2dArray(array2));
 
-            Assert.That(actual, Is.False);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual1, Is.False);
+                Assert.That(actual2, Is.False);
+                Assert.That(actual3, Is.False);
+            });
         }
 
         [Test]
@@ -45,9 +86,16 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             int[,] array1 = null!;
             var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
 
-            var actual = ArrayExtensions.AreArraysEquivalent(array1, array2);
+            var actual1 = ArrayExtensions.AreArraysEquivalent(array1, array2);
+            var actual2 = ArrayExtensions.AreArraysEquivalent(Convert2dArray(array1), array2);
+            var actual3 = ArrayExtensions.AreArraysEquivalent(array1, Convert2dArray(array2));
 
-            Assert.That(actual, Is.False);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual1, Is.False);
+                Assert.That(actual2, Is.False);
+                Assert.That(actual3, Is.False);
+            });
         }
 
         [Test]
@@ -56,9 +104,16 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
             int[,] array2 = null!;
 
-            var actual = ArrayExtensions.AreArraysEquivalent(array1, array2);
+            var actual1 = ArrayExtensions.AreArraysEquivalent(array1, array2);
+            var actual2 = ArrayExtensions.AreArraysEquivalent(Convert2dArray(array1), array2);
+            var actual3 = ArrayExtensions.AreArraysEquivalent(array1, Convert2dArray(array2));
 
-            Assert.That(actual, Is.False);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual1, Is.False);
+                Assert.That(actual2, Is.False);
+                Assert.That(actual3, Is.False);
+            });
         }
 
         [Test]
@@ -67,9 +122,16 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             int[,] array1 = null!;
             int[,] array2 = null!;
 
-            var actual = ArrayExtensions.AreArraysEquivalent(array1, array2);
+            var actual1 = ArrayExtensions.AreArraysEquivalent(array1, array2);
+            var actual2 = ArrayExtensions.AreArraysEquivalent(Convert2dArray(array1), array2);
+            var actual3 = ArrayExtensions.AreArraysEquivalent(array1, Convert2dArray(array2));
 
-            Assert.That(actual, Is.True);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual1, Is.True);
+                Assert.That(actual2, Is.True);
+                Assert.That(actual3, Is.True);
+            });
         }
 
         [Test]
@@ -78,9 +140,16 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             var array1 = new int[,] { };
             var array2 = new int[,] { };
 
-            var actual = ArrayExtensions.AreArraysEquivalent(array1, array2);
+            var actual1 = ArrayExtensions.AreArraysEquivalent(array1, array2);
+            var actual2 = ArrayExtensions.AreArraysEquivalent(Convert2dArray(array1), array2);
+            var actual3 = ArrayExtensions.AreArraysEquivalent(array1, Convert2dArray(array2));
 
-            Assert.That(actual, Is.True);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual1, Is.True);
+                Assert.That(actual2, Is.True);
+                Assert.That(actual3, Is.True);
+            });
         }
 
         [Test]
@@ -89,9 +158,16 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             var array1 = new int[,] { };
             var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
 
-            var actual = ArrayExtensions.AreArraysEquivalent(array1, array2);
+            var actual1 = ArrayExtensions.AreArraysEquivalent(array1, array2);
+            var actual2 = ArrayExtensions.AreArraysEquivalent(Convert2dArray(array1), array2);
+            var actual3 = ArrayExtensions.AreArraysEquivalent(array1, Convert2dArray(array2));
 
-            Assert.That(actual, Is.False);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual1, Is.False);
+                Assert.That(actual2, Is.False);
+                Assert.That(actual3, Is.False);
+            });
         }
 
         [Test]
@@ -100,9 +176,16 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
             var array2 = new int[,] { };
 
-            var actual = ArrayExtensions.AreArraysEquivalent(array1, array2);
+            var actual1 = ArrayExtensions.AreArraysEquivalent(array1, array2);
+            var actual2 = ArrayExtensions.AreArraysEquivalent(Convert2dArray(array1), array2);
+            var actual3 = ArrayExtensions.AreArraysEquivalent(array1, Convert2dArray(array2));
 
-            Assert.That(actual, Is.False);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual1, Is.False);
+                Assert.That(actual2, Is.False);
+                Assert.That(actual3, Is.False);
+            });
         }
         #endregion AreArraysEquivalent
 
@@ -113,9 +196,18 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
             var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
 
-            var actual = array1.IsEquivalentTo(array2);
-
-            Assert.That(actual, Is.True);
+            var actual1 = array1.IsEquivalentTo(array2);
+            var actual2 = array1.IsEquivalentTo(Convert2dArray(array2));
+            var actual3 = Convert2dArray(array1).IsEquivalentTo(array2);
+            var actual4 = Convert2dArray(array1).IsEquivalentTo(Convert2dArray(array2));
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual1, Is.True);
+                Assert.That(actual2, Is.True);
+                Assert.That(actual3, Is.True);
+                Assert.That(actual4, Is.True);
+            });
         }
 
         [Test]
@@ -124,9 +216,18 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
             var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 7 } };
 
-            var actual = array1.IsEquivalentTo(array2);
+            var actual1 = array1.IsEquivalentTo(array2);
+            var actual2 = array1.IsEquivalentTo(Convert2dArray(array2));
+            var actual3 = Convert2dArray(array1).IsEquivalentTo(array2);
+            var actual4 = Convert2dArray(array1).IsEquivalentTo(Convert2dArray(array2));
 
-            Assert.That(actual, Is.False);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual1, Is.False);
+                Assert.That(actual2, Is.False);
+                Assert.That(actual3, Is.False);
+                Assert.That(actual4, Is.False);
+            });
         }
         [Test]
         public void IsEquivalentTo_ReturnsFalse_ForDifferentSizedArrays()
@@ -134,9 +235,18 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
             var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
 
-            var actual = array1.IsEquivalentTo(array2);
+            var actual1 = array1.IsEquivalentTo(array2);
+            var actual2 = array1.IsEquivalentTo(Convert2dArray(array2));
+            var actual3 = Convert2dArray(array1).IsEquivalentTo(array2);
+            var actual4 = Convert2dArray(array1).IsEquivalentTo(Convert2dArray(array2));
 
-            Assert.That(actual, Is.False);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual1, Is.False);
+                Assert.That(actual2, Is.False);
+                Assert.That(actual3, Is.False);
+                Assert.That(actual4, Is.False);
+            });
         }
         [Test]
         public void IsEquivalentTo_ReturnsFalse_ForNullArray1()
@@ -144,9 +254,18 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             int[,] array1 = null!;
             var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
 
-            var actual = array1.IsEquivalentTo(array2);
+            var actual1 = array1.IsEquivalentTo(array2);
+            var actual2 = array1.IsEquivalentTo(Convert2dArray(array2));
+            var actual3 = Convert2dArray(array1).IsEquivalentTo(array2);
+            var actual4 = Convert2dArray(array1).IsEquivalentTo(Convert2dArray(array2));
 
-            Assert.That(actual, Is.False);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual1, Is.False);
+                Assert.That(actual2, Is.False);
+                Assert.That(actual3, Is.False);
+                Assert.That(actual4, Is.False);
+            });
         }
         [Test]
         public void IsEquivalentTo_ReturnsFalse_ForNullArray2()
@@ -154,9 +273,18 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
             int[,] array2 = null!;
 
-            var actual = array1.IsEquivalentTo(array2);
+            var actual1 = array1.IsEquivalentTo(array2);
+            var actual2 = array1.IsEquivalentTo(Convert2dArray(array2));
+            var actual3 = Convert2dArray(array1).IsEquivalentTo(array2);
+            var actual4 = Convert2dArray(array1).IsEquivalentTo(Convert2dArray(array2));
 
-            Assert.That(actual, Is.False);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual1, Is.False);
+                Assert.That(actual2, Is.False);
+                Assert.That(actual3, Is.False);
+                Assert.That(actual4, Is.False);
+            });
         }
         [Test]
         public void IsEquivalentTo_ReturnsTrue_ForNullArrays()
@@ -164,9 +292,18 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             int[,] array1 = null!;
             int[,] array2 = null!;
 
-            var actual = array1.IsEquivalentTo(array2);
+            var actual1 = array1.IsEquivalentTo(array2);
+            var actual2 = array1.IsEquivalentTo(Convert2dArray(array2));
+            var actual3 = Convert2dArray(array1).IsEquivalentTo(array2);
+            var actual4 = Convert2dArray(array1).IsEquivalentTo(Convert2dArray(array2));
 
-            Assert.That(actual, Is.True);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual1, Is.True);
+                Assert.That(actual2, Is.True);
+                Assert.That(actual3, Is.True);
+                Assert.That(actual4, Is.True);
+            });
         }
         [Test]
         public void IsEquivalentTo_ReturnsTrue_ForEmptyArrays()
@@ -174,19 +311,38 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             var array1 = new int[,] { };
             var array2 = new int[,] { };
 
-            var actual = array1.IsEquivalentTo(array2);
+            var actual1 = array1.IsEquivalentTo(array2);
+            var actual2 = array1.IsEquivalentTo(Convert2dArray(array2));
+            var actual3 = Convert2dArray(array1).IsEquivalentTo(array2);
+            var actual4 = Convert2dArray(array1).IsEquivalentTo(Convert2dArray(array2));
 
-            Assert.That(actual, Is.True);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual1, Is.True);
+                Assert.That(actual2, Is.True);
+                Assert.That(actual3, Is.True);
+                Assert.That(actual4, Is.True);
+            });
         }
+
         [Test]
         public void IsEquivalentTo_ReturnsFalse_ForEmptyArray1()
         {
             var array1 = new int[,] { };
             var array2 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
 
-            var actual = array1.IsEquivalentTo(array2);
+            var actual1 = array1.IsEquivalentTo(array2);
+            var actual2 = array1.IsEquivalentTo(Convert2dArray(array2));
+            var actual3 = Convert2dArray(array1).IsEquivalentTo(array2);
+            var actual4 = Convert2dArray(array1).IsEquivalentTo(Convert2dArray(array2));
 
-            Assert.That(actual, Is.False);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual1, Is.False);
+                Assert.That(actual2, Is.False);
+                Assert.That(actual3, Is.False);
+                Assert.That(actual4, Is.False);
+            });
         }
 
         [Test]
@@ -195,9 +351,18 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             var array1 = new int[,] { { 1, 2, 3 }, { 4, 5, 6 } };
             var array2 = new int[,] { };
 
-            var actual = array1.IsEquivalentTo(array2);
+            var actual1 = array1.IsEquivalentTo(array2);
+            var actual2 = array1.IsEquivalentTo(Convert2dArray(array2));
+            var actual3 = Convert2dArray(array1).IsEquivalentTo(array2);
+            var actual4 = Convert2dArray(array1).IsEquivalentTo(Convert2dArray(array2));
 
-            Assert.That(actual, Is.False);
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual1, Is.False);
+                Assert.That(actual2, Is.False);
+                Assert.That(actual3, Is.False);
+                Assert.That(actual4, Is.False);
+            });
         }
         #endregion IsEquivalentTo
 
@@ -248,6 +413,22 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             int[,] array = null!;
 
             Assert.Throws<ArgumentNullException>(() => array.GetLine(0, 0));
+        }
+
+        [Test]
+        public void GetLine_Throws_ForInvalidDimension()
+        {
+            var array = new int[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
+
+            Assert.Throws<ArgumentException>(() => array.GetLine(2, 0));
+        }
+
+        [Test]
+        public void GetLine_Throws_ForNegativeDimension()
+        {
+            var array = new int[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
+
+            Assert.Throws<ArgumentException>(() => array.GetLine(-1, 0));
         }
         #endregion GetLine
 
@@ -456,6 +637,20 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
             {
                 Assert.That(actual, Is.TypeOf<object[,]>());
                 Assert.That(actual, new IsEquivalentTo2DArrayConstraint<object>(new object[,] { { 1, 2 }, { 3, 4 } }));
+            });
+        }
+
+        [Test]
+        public void Cast_ReturnsValidArray_ForValidCastWitNullValues()
+        {
+            var array = new int?[,] { { 1, 2 }, { null, 4 } };
+
+            var actual = array.Cast<int?, double?>();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(actual, Is.TypeOf<double?[,]>());
+                Assert.That(actual, new IsEquivalentTo2DArrayConstraint<double?>(new double?[,] { { 1, 2 }, { null, 4 } }));
             });
         }
 

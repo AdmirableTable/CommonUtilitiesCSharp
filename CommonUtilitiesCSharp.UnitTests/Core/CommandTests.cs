@@ -241,9 +241,9 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
 
     public class CommandTTests : CommandTestBase<string>
     {
-        protected override Command CreateCommand(Action<string?> execute) => new Command<string>(execute);
+        protected override Command<string> CreateCommand(Action<string?> execute) => new(execute);
 
-        protected override Command CreateCommand(Action<string?> execute, Predicate<string?> canExecute) => new Command<string>(execute, canExecute);
+        protected override Command<string> CreateCommand(Action<string?> execute, Predicate<string?> canExecute) => new(execute, canExecute);
 
         #region Execute
         [Test]

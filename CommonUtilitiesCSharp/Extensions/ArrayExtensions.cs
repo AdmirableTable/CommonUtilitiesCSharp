@@ -78,6 +78,7 @@
         public static T[] GetLine<T>(this T[,] array, int targetDimension, int index)
         {
             if (array is null) throw new ArgumentNullException(nameof(array));
+            if (targetDimension < 0 || targetDimension > 1) throw new ArgumentException($"{nameof(targetDimension)} \'{targetDimension}\' does not match valid dimension indexes 0 and 1", nameof(targetDimension));
 
             var arrayLength = array.GetLength(targetDimension);
             var result = new T[arrayLength];
@@ -86,10 +87,8 @@
 
             if (targetDimension == 0)
                 addToResultSet = (i) => result[i] = array[i, index];
-            else if (targetDimension == 1)
+            else // targetDimension == 1
                 addToResultSet = (i) => result[i] = array[index, i];
-            else
-                throw new ArgumentException($"Array has 2 dimensions, hence {nameof(targetDimension)} must be 0 or 1", nameof(targetDimension));
 
             for (var i = 0; i < arrayLength; i++)
             {
@@ -203,7 +202,7 @@
         public static TResult[,] Cast <TSource, TResult>(this TSource[,] source)
         {
             if (source is null) throw new ArgumentNullException(nameof(source));
-        
+
             var length0 = source.GetLength(0);
             var length1 = source.GetLength(1);
             var result = new TResult[length0, length1];
@@ -212,12 +211,28 @@
             {
                 for (var j = 0; j < length1; j++)
                 {
-                    var sourceItem = (object?)source[i, j];
-                    result[i, j] = sourceItem is null ? default! : (TResult)Convert.ChangeType(sourceItem, typeof(TResult));
+                    var sourceItem = source[i, j];
+                    result[i, j] = CastItem<TSource, TResult>(sourceItem);
                 }
             }
 
             return result;
+        }
+
+        private static TResult CastItem<TSource, TResult>(TSource sourceItem)
+        {
+            if (sourceItem is null)
+                return default!;
+
+            var targetType = typeof(TResult);
+
+            var underlyingType = Nullable.GetUnderlyingType(targetType);
+            if (underlyingType is not null)
+            {
+                return (TResult)Convert.ChangeType(sourceItem, underlyingType);
+            }
+
+            return (TResult)Convert.ChangeType(sourceItem, targetType);
         }
     }
 }
