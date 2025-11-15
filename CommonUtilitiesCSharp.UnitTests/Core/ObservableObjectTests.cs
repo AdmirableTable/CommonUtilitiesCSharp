@@ -51,8 +51,12 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
             Assert.That(mockObject.HasPropertyChangedBeenCalled, Is.False);
 
             mockObject.Value = "test2";
-
-            Assert.That(mockObject.HasPropertyChangedBeenCalled, Is.True);
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(mockObject.Value, Is.EqualTo("test2"));
+                Assert.That(mockObject.HasPropertyChangedBeenCalled, Is.True);
+            });
         }
 
         [Test]
@@ -94,6 +98,7 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
 
             Assert.Multiple(() =>
             {
+                Assert.That(mockObject.IndirectValue, Is.EqualTo("test2"));
                 Assert.That(propertiesChanged, Has.Count.EqualTo(2));
                 Assert.That(propertiesChanged[0], Is.EqualTo(nameof(MockObservableObject.IndirectValue)));
                 Assert.That(propertiesChanged[1], Is.EqualTo(nameof(MockObservableObject.Value)));

@@ -18,8 +18,9 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
         [Test]
         public void Constructor_Throws_ForNullCanExecute()
         {
-            static void execute(TCommandParameter? param) { }
+            static void execute(TCommandParameter? param) { throw new NotSupportedException(); }
 
+            Assert.Throws<NotSupportedException>(() => execute(default));
             Assert.Throws<ArgumentNullException>(() => CreateCommand(execute, null!));
         }
 
@@ -28,6 +29,7 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
         {
             static bool canExecute(TCommandParameter? param) { throw new NotSupportedException(); }
 
+            Assert.Throws<NotSupportedException>(() => canExecute(default));
             Assert.Throws<ArgumentNullException>(() => CreateCommand(null!, canExecute));
         }
         #endregion Constructor
@@ -160,6 +162,7 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
         #endregion Execute
 
         #region CanExecute
+        [Test]
         public override void CanExecute_ReturnsTrue_WhenThereIsNoPredicate()
         {
             var command = CreateCommand(parameter => { });
@@ -326,6 +329,7 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
         #endregion Execute
 
         #region CanExecute
+        [Test]
         public override void CanExecute_ReturnsTrue_WhenThereIsNoPredicate()
         {
             var command = CreateCommand(parameter => { });

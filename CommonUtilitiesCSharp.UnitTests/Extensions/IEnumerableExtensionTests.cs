@@ -4,75 +4,53 @@ namespace CommonUtilitiesCSharp.UnitTests.Extensions
 {
     public class IEnumerableExtensionTests
     {
-        private class MockObject
-        {
-            public MockObject(string value)
-            {
-                Value = value;
-            }
-
-            public string? Value { get; set; }
-
-            public override bool Equals(object? obj)
-            {
-                return obj is MockObject @object && Equals(@object);
-            }
-
-            public bool Equals(MockObject? obj)
-            {
-                return obj != null &&
-                       Value == obj.Value;
-            }
-
-            public override int GetHashCode()
-            {
-                return nameof(MockObject).GetHashCode() * ((Value?.GetHashCode() ?? -1) + 7);
-            }
-        }
-
         #region ForEach
         [Test]
         public void ForEach_ExecutesActionOnAllItems_ForMultipleItems()
         {
-            var items = new MockObject[] { new("a"), new("b"), new("c") };
+            var items = new int[] { 1, 2, 3 };
+            var result = new List<int>();
 
-            items.ForEach(item => item.Value += ".");
+            items.ForEach(item => result.Add(item + 1));
 
-            Assert.That(items, Is.EquivalentTo(new MockObject[] { new("a."), new("b."), new("c.") }));
+            Assert.That(result, Is.EquivalentTo(new int[] { 2, 3, 4 }));
         }
 
         [Test]
         public void ForEach_ExecutesActionOnAllItems_ForSingleItem()
         {
-            var items = new MockObject[] { new("a") };
+            var items = new int[] { 1 };
+            var result = new List<int>();
 
-            items.ForEach(item => item.Value += ".");
+            items.ForEach(item => result.Add(item + 1));
 
-            Assert.That(items, Is.EquivalentTo(new MockObject[] { new("a.") }));
+            Assert.That(result, Is.EquivalentTo(new int[] { 2 }));
         }
 
         [Test]
         public void ForEach_ExecutesActionOnAllItems_ForZeroItems()
         {
-            var items = Array.Empty<MockObject>();
+            var items = Array.Empty<int>();
+            var result = new List<int>();
 
-            items.ForEach(item => item.Value += ".");
+            items.ForEach(item => result.Add(item + 1));
 
-            Assert.That(items, Is.EquivalentTo(Array.Empty<MockObject>()));
+            Assert.That(result, Is.EquivalentTo(Array.Empty<int>()));
         }
 
         [Test]
         public void ForEach_ThrowsArgumentNullException_ForNullEnumerable()
         {
-            IEnumerable<string> items = null!;
+            IEnumerable<int> items = null!;
+            var result = new List<int>();
 
-            Assert.Throws<ArgumentNullException>(() => items.ForEach(item => item += "."));
+            Assert.Throws<ArgumentNullException>(() => items.ForEach(item => result.Add(item + 1)));
         }
 
         [Test]
         public void ForEach_ThrowsArgumentNullException_ForNullAction()
         {
-            var items = new string[] { "a", "b", "c" };
+            var items = new int[] { 1, 2, 3 };
 
             Assert.Throws<ArgumentNullException>(() => items.ForEach(null!));
         }
