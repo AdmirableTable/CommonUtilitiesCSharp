@@ -21,7 +21,7 @@ namespace CommonUtilitiesCSharp.NUnit.Constraints
         }
 
         /// <inheritdoc/>
-        public override string DisplayName => "Equivalent";
+        public override string DisplayName => "Equivalent Arrays";
 
         /// <inheritdoc/>
         public override string Description => "equivalent to " + MsgUtils.FormatArray(_expected);
