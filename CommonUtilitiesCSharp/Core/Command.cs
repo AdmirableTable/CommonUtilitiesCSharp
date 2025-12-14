@@ -6,26 +6,52 @@
     public class Command
     {
         #region Fields
-        private readonly Action<object?> _execute;
+        private readonly Func<object?, Task> _execute;
         private readonly Predicate<object?> _canExecute = param => true;
         #endregion Fields
 
         #region Constructors
         /// <summary>
-        /// Initializes an instance of a command that will always execute.
+        /// Initializes an instance of a synchronous command that will always execute.
         /// </summary>
         /// <param name="execute">Action to execute when the command is triggered</param>
+        /// <exception cref="ArgumentNullException">Thrown is <paramref name="execute"/> is null.</exception>
         public Command(Action<object?> execute)
+        {
+            ArgumentNullException.ThrowIfNull(execute);
+            _execute = param => { execute(param); return Task.CompletedTask; };
+        }
+
+        /// <summary>
+        /// Initializes an instance of a synchronous command that will only execute when the predicate is met.
+        /// </summary>
+        /// <param name="execute">Action to execute when the command is triggered.</param>
+        /// <param name="canExecute">Predicate that must be met for the command to execute.</param>
+        /// <exception cref="ArgumentNullException">Thrown is <paramref name="execute"/> or <paramref name="canExecute"/> is null.</exception>
+        public Command(Action<object?> execute, Predicate<object?> canExecute)
+        {
+            ArgumentNullException.ThrowIfNull(execute);
+            _execute = param => { execute(param); return Task.CompletedTask; };
+            _canExecute = canExecute ?? throw new ArgumentNullException(nameof(canExecute));
+        }
+
+        /// <summary>
+        /// Initializes an instance of an asynchronous command that will always execute.
+        /// </summary>
+        /// <param name="execute">Asynchronous action to execute when the command is triggered.</param>
+        /// <exception cref="ArgumentNullException">Thrown is <paramref name="execute"/> is null.</exception>
+        public Command(Func<object?, Task> execute)
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
         }
 
         /// <summary>
-        /// Initializes an instance of a command that will only execute when the predicate is met.
+        /// Initializes an instance of an asynchronous command that will only execute when the predicate is met.
         /// </summary>
-        /// <param name="execute">Action to execute when the command is triggered.</param>
+        /// <param name="execute">Asynchronous action to execute when the command is triggered.</param>
         /// <param name="canExecute">Predicate that must be met for the command to execute.</param>
-        public Command(Action<object?> execute, Predicate<object?> canExecute)
+        /// <exception cref="ArgumentNullException">Thrown is <paramref name="execute"/> or <paramref name="canExecute"/> is null.</exception>
+        public Command(Func<object?, Task> execute, Predicate<object?> canExecute)
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute ?? throw new ArgumentNullException(nameof(canExecute));
@@ -47,10 +73,12 @@
         /// Attempts to execute the command, using the given parameter. If the command is not allowed to execute, nothing happens.
         /// </summary>
         /// <param name="parameter">Parameter to be used by the predicate to determine if the command can be executed and the execution logic itself if the command is allowed to execute.</param>
-        public void Execute(object? parameter = null)
+        public async Task Execute(object? parameter = null)
         {
             if (CanExecute(parameter))
-                _execute(parameter);
+                await _execute(parameter);
+
+            return;
         }
         #endregion Members
 
@@ -64,10 +92,7 @@
         /// <exception cref="ArgumentException">Thrown is <paramref name="commandParameter"/> cannot be cast to type <typeparamref name="TParameter"/>.</exception>
         public static TParameter ConvertParameter<TParameter>(object? commandParameter)
         {
-            if (commandParameter is null)
-            {
-                throw new ArgumentNullException(nameof(commandParameter));
-            }
+            ArgumentNullException.ThrowIfNull(commandParameter);
 
             if (commandParameter is TParameter expectedParameter)
             {
@@ -89,6 +114,8 @@
         #region Private Methods
         private static void ConvertExecute(Action<TParameter?> action, object? commandParameter) => action(ConvertParameter(commandParameter));
 
+        private static Task ConvertExecute(Func<TParameter?, Task> action, object? commandParameter) => action(ConvertParameter(commandParameter));
+
         private static bool ConvertCanExecute(Predicate<TParameter?> predicate, object? commandParameter) => predicate(ConvertParameter(commandParameter));
 
         private static TParameter? ConvertParameter(object? commandParameter) => ConvertParameter<TParameter?>(commandParameter);
@@ -98,7 +125,7 @@
         /// <inheritdoc cref="Command(Action{object?})"/>
         public Command(Action<TParameter?> execute) : base(commandParameter => ConvertExecute(execute, commandParameter))
         {
-            if (execute is null) throw new ArgumentNullException(nameof(execute)); // Avoids propagating a forced null value down the chain
+            ArgumentNullException.ThrowIfNull(execute); // Avoids propagating a forced null value down the chain
         }
 
         /// <inheritdoc cref="Command(Action{object?}, Predicate{object?})"/>
@@ -106,8 +133,23 @@
             commandParameter => ConvertExecute(execute, commandParameter),
             commandParameter => ConvertCanExecute(canExecute, commandParameter))
         {
-            if (execute is null) throw new ArgumentNullException(nameof(execute)); // Avoids propagating a forced null value down the chain
-            if (canExecute is null) throw new ArgumentNullException(nameof(canExecute)); // Avoids propagating a forced null value down the chain
+            ArgumentNullException.ThrowIfNull(execute); // Avoids propagating a forced null value down the chain
+            ArgumentNullException.ThrowIfNull(canExecute); // Avoids propagating a forced null value down the chain
+        }
+
+        /// <inheritdoc cref="Command(Func{object?, Task})"/>
+        public Command(Func<TParameter?, Task> execute) : base(commandParameter => ConvertExecute(execute, commandParameter))
+        {
+            ArgumentNullException.ThrowIfNull(execute); // Avoids propagating a forced null value down the chain
+        }
+
+        /// <inheritdoc cref="Command(Func{object?, Task}, Predicate{object?})"/>
+        public Command(Func<TParameter?, Task> execute, Predicate<TParameter?> canExecute) : base(
+            commandParameter => ConvertExecute(execute, commandParameter),
+            commandParameter => ConvertCanExecute(canExecute, commandParameter))
+        {
+            ArgumentNullException.ThrowIfNull(execute); // Avoids propagating a forced null value down the chain
+            ArgumentNullException.ThrowIfNull(canExecute); // Avoids propagating a forced null value down the chain
         }
         #endregion Constructors
 
@@ -119,14 +161,14 @@
         }
 
         /// <inheritdoc cref="Command.Execute(object?)"/>
-        public void Execute(TParameter? parameter)
+        public async Task Execute(TParameter? parameter)
         {
             if (!CanExecute(parameter))
             {
                 return;
             }
 
-            base.Execute(parameter);
+            await base.Execute(parameter);
         }
         #endregion Members
     }
