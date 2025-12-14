@@ -6,22 +6,33 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
     {
         protected abstract Command CreateCommand(Action<TCommandParameter?> execute);
 
+        protected abstract Command CreateCommand(Func<TCommandParameter?, Task> execute);
+
         protected abstract Command CreateCommand(Action<TCommandParameter?> execute, Predicate<TCommandParameter?> canExecute);
+
+        protected abstract Command CreateCommand(Func<TCommandParameter?, Task> execute, Predicate<TCommandParameter?> canExecute);
 
         #region Constructor
         [Test]
         public void Constructor_Throws_ForNullExecute()
         {
-            Assert.Throws<ArgumentNullException>(() => CreateCommand(null!));
+            Assert.Throws<ArgumentNullException>(() => CreateCommand((Action<TCommandParameter?>)null!));
+            Assert.Throws<ArgumentNullException>(() => CreateCommand((Func<TCommandParameter?, Task>)null!));
         }
 
         [Test]
         public void Constructor_Throws_ForNullCanExecute()
         {
             static void execute(TCommandParameter? param) { throw new NotSupportedException(); }
+            static Task asyncExecute(TCommandParameter? param) { throw new NotSupportedException(); }
 
+            // Check the execute functions would behave as expected if the test failed
             Assert.Throws<NotSupportedException>(() => execute(default));
+            Assert.ThrowsAsync<NotSupportedException>(() => asyncExecute(default));
+
+            // Actual test
             Assert.Throws<ArgumentNullException>(() => CreateCommand(execute, null!));
+            Assert.Throws<ArgumentNullException>(() => CreateCommand(asyncExecute, null!));
         }
 
         [Test]
@@ -36,19 +47,34 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
 
         #region Execute
         [Test]
-        public abstract void Execute_IsInvoked_WhenThereIsNoPredicate();
+        public abstract Task Execute_IsInvoked_WhenThereIsNoPredicate();
 
         [Test]
-        public abstract void Execute_IsNotInvoked_WhenPredicateIsFalse();
+        public abstract Task Execute_IsInvokedAsync_WhenThereIsNoPredicate();
 
         [Test]
-        public abstract void Execute_IsInvoked_WhenPredicateIsTrue();
+        public abstract Task Execute_IsNotInvoked_WhenPredicateIsFalse();
 
         [Test]
-        public abstract void Execute_IsInvokedWithParameter_WhenParameterIsPassed();
+        public abstract Task Execute_IsNotInvokedAsync_WhenPredicateIsFalse();
 
         [Test]
-        public abstract void Execute_IsInvokedWithParameter_WhenParameterIsPassedAndPredicateIsTrue();
+        public abstract Task Execute_IsInvoked_WhenPredicateIsTrue();
+
+        [Test]
+        public abstract Task Execute_IsInvokedAsync_WhenPredicateIsTrue();
+
+        [Test]
+        public abstract Task Execute_IsInvokedWithParameter_WhenParameterIsPassed();
+
+        [Test]
+        public abstract Task Execute_IsInvokedAsyncWithParameter_WhenParameterIsPassed();
+
+        [Test]
+        public abstract Task Execute_IsInvokedWithParameter_WhenParameterIsPassedAndPredicateIsTrue();
+
+        [Test]
+        public abstract Task Execute_IsInvokedAsyncWithParameter_WhenParameterIsPassedAndPredicateIsTrue();
         #endregion Execute
 
         #region CanExecute
@@ -73,24 +99,46 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
     {
         protected override Command CreateCommand(Action<object?> execute) => new(execute);
 
+        protected override Command CreateCommand(Func<object?, Task> execute) => new(execute);
+
         protected override Command CreateCommand(Action<object?> execute, Predicate<object?> canExecute) => new(execute, canExecute);
+
+        protected override Command CreateCommand(Func<object?, Task> execute, Predicate<object?> canExecute) => new(execute, canExecute);
 
         #region Execute
         [Test]
-        public override void Execute_IsInvoked_WhenThereIsNoPredicate()
+        public async override Task Execute_IsInvoked_WhenThereIsNoPredicate()
         {
             var flag = false;
             var command = CreateCommand(parameter => flag = true);
 
             Assert.That(flag, Is.False);
 
-            command.Execute();
+            await command.Execute();
 
             Assert.That(flag, Is.True);
         }
 
         [Test]
-        public override void Execute_IsNotInvoked_WhenPredicateIsFalse()
+        public async override Task Execute_IsInvokedAsync_WhenThereIsNoPredicate()
+        {
+            var task = new TaskCompletionSource();
+
+            var command = CreateCommand(async parameter =>
+            {
+                task.SetResult();
+                await Task.CompletedTask;
+            });
+
+            Assert.That(task.Task.IsCompleted, Is.False);
+
+            await command.Execute();
+
+            Assert.That(task.Task.IsCompleted, Is.True);
+        }
+
+        [Test]
+        public async override Task Execute_IsNotInvoked_WhenPredicateIsFalse()
         {
             var flag = false;
             var condition = false;
@@ -102,13 +150,32 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
                 Assert.That(condition, Is.False);
             });
 
-            command.Execute();
+            await command.Execute();
 
             Assert.That(flag, Is.False);
         }
 
         [Test]
-        public override void Execute_IsInvoked_WhenPredicateIsTrue()
+        public async override Task Execute_IsNotInvokedAsync_WhenPredicateIsFalse()
+        {
+            var task = new TaskCompletionSource();
+            var condition = false;
+
+            var command = CreateCommand(async parameter =>
+            {
+                task.SetResult();
+                await Task.CompletedTask;
+            }, parameter => condition);
+
+            Assert.That(task.Task.IsCompleted, Is.False);
+
+            await command.Execute();
+
+            Assert.That(task.Task.IsCompleted, Is.False);
+        }
+
+        [Test]
+        public async override Task Execute_IsInvoked_WhenPredicateIsTrue()
         {
             var flag = false;
             var condition = false;
@@ -121,26 +188,68 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
             });
 
             condition = true;
-            command.Execute();
+            await command.Execute();
 
             Assert.That(flag, Is.True);
         }
+        public async override Task Execute_IsInvokedAsync_WhenPredicateIsTrue()
+        {
+            var task = new TaskCompletionSource();
+            var condition = false;
+            var command = CreateCommand(async parameter =>
+            {
+                task.SetResult();
+                await Task.CompletedTask;
+            }, parameter => condition);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(task.Task.IsCompleted, Is.False);
+                Assert.That(condition, Is.False);
+            });
+
+            condition = true;
+            await command.Execute();
+
+            Assert.That(task.Task.IsCompleted, Is.True);
+        }
 
         [Test]
-        public override void Execute_IsInvokedWithParameter_WhenParameterIsPassed()
+        public async override Task Execute_IsInvokedWithParameter_WhenParameterIsPassed()
         {
             var flag = false;
             var command = CreateCommand(parameter => flag = (bool)parameter!);
 
             Assert.That(flag, Is.False);
 
-            command.Execute(true);
+            await command.Execute(true);
 
             Assert.That(flag, Is.True);
         }
 
         [Test]
-        public override void Execute_IsInvokedWithParameter_WhenParameterIsPassedAndPredicateIsTrue()
+        public async override Task Execute_IsInvokedAsyncWithParameter_WhenParameterIsPassed()
+        {
+            var task = new TaskCompletionSource<bool>();
+            var command = CreateCommand(async parameter =>
+            {
+                task.SetResult((bool)parameter!);
+                await Task.CompletedTask;
+            });
+
+            Assert.That(task.Task.IsCompleted, Is.False);
+
+            await command.Execute(true);
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(task.Task.IsCompleted, Is.True);
+                Assert.That(task.Task.Result, Is.True);
+            });
+        }
+
+        [Test]
+        public async override Task Execute_IsInvokedWithParameter_WhenParameterIsPassedAndPredicateIsTrue()
         {
             var flag = false;
             var command = CreateCommand(parameter =>
@@ -155,9 +264,35 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
 
             Assert.That(flag, Is.False);
 
-            command.Execute(new[] { true, false });
+            await command.Execute(new[] { true, false });
 
             Assert.That(flag, Is.True);
+        }
+
+        [Test]
+        public async override Task Execute_IsInvokedAsyncWithParameter_WhenParameterIsPassedAndPredicateIsTrue()
+        {
+            var task = new TaskCompletionSource<bool>();
+            var command = CreateCommand(async parameter =>
+            {
+                var parameters = (bool[])parameter!;
+                task.SetResult(parameters[0]);
+                await Task.CompletedTask;
+            }, parameter =>
+            {
+                var parameters = (bool[])parameter!;
+                return !parameters[1];
+            });
+
+            Assert.That(task.Task.IsCompleted, Is.False);
+
+            await command.Execute(new[] { true, false });
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(task.Task.IsCompleted, Is.True);
+                Assert.That(task.Task.Result, Is.True);
+            });
         }
         #endregion Execute
 
@@ -246,24 +381,45 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
     {
         protected override Command<string> CreateCommand(Action<string?> execute) => new(execute);
 
+        protected override Command<string> CreateCommand(Func<string?, Task> execute) => new(execute);
+
         protected override Command<string> CreateCommand(Action<string?> execute, Predicate<string?> canExecute) => new(execute, canExecute);
+
+        protected override Command<string> CreateCommand(Func<string?, Task> execute, Predicate<string?> canExecute) => new(execute, canExecute);
 
         #region Execute
         [Test]
-        public override void Execute_IsInvoked_WhenThereIsNoPredicate()
+        public async override Task Execute_IsInvoked_WhenThereIsNoPredicate()
         {
             var flag = false;
             var command = CreateCommand(parameter => flag = true);
 
             Assert.That(flag, Is.False);
 
-            command.Execute("test");
+            await command.Execute("test");
 
             Assert.That(flag, Is.True);
         }
 
         [Test]
-        public override void Execute_IsNotInvoked_WhenPredicateIsFalse()
+        public async override Task Execute_IsInvokedAsync_WhenThereIsNoPredicate()
+        {
+            var task = new TaskCompletionSource();
+            var command = CreateCommand(async parameter =>
+            {
+                task.SetResult();
+                await Task.CompletedTask;
+            });
+
+            Assert.That(task.Task.IsCompleted, Is.False);
+
+            await command.Execute("test");
+
+            Assert.That(task.Task.IsCompleted, Is.True);
+        }
+
+        [Test]
+        public async override Task Execute_IsNotInvoked_WhenPredicateIsFalse()
         {
             var flag = false;
             var condition = false;
@@ -275,13 +431,35 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
                 Assert.That(condition, Is.False);
             });
 
-            command.Execute("test");
+            await command.Execute("test");
 
             Assert.That(flag, Is.False);
         }
 
         [Test]
-        public override void Execute_IsInvoked_WhenPredicateIsTrue()
+        public async override Task Execute_IsNotInvokedAsync_WhenPredicateIsFalse()
+        {
+            var task = new TaskCompletionSource();
+            var condition = false;
+            var command = CreateCommand(async parameter =>
+            {
+                task.SetResult();
+                await Task.CompletedTask;
+            }, parameter => condition);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(task.Task.IsCompleted, Is.False);
+                Assert.That(condition, Is.False);
+            });
+
+            await command.Execute("test");
+
+            Assert.That(task.Task.IsCompleted, Is.False);
+        }
+
+        [Test]
+        public async override Task Execute_IsInvoked_WhenPredicateIsTrue()
         {
             var flag = false;
             var condition = false;
@@ -294,26 +472,70 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
             });
 
             condition = true;
-            command.Execute("test");
+            await command.Execute("test");
 
             Assert.That(flag, Is.True);
         }
 
         [Test]
-        public override void Execute_IsInvokedWithParameter_WhenParameterIsPassed()
+        public async override Task Execute_IsInvokedAsync_WhenPredicateIsTrue()
+        {
+            var task = new TaskCompletionSource();
+            var condition = false;
+            var command = CreateCommand(async parameter =>
+            {
+                task.SetResult();
+                await Task.CompletedTask;
+            }, parameter => condition);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(task.Task.IsCompleted, Is.False);
+                Assert.That(condition, Is.False);
+            });
+
+            condition = true;
+            await command.Execute("test");
+
+            Assert.That(task.Task.IsCompleted, Is.True);
+        }
+
+        [Test]
+        public async override Task Execute_IsInvokedWithParameter_WhenParameterIsPassed()
         {
             var flag = false;
             var command = CreateCommand(parameter => flag = parameter == "success");
 
             Assert.That(flag, Is.False);
 
-            command.Execute("success");
+            await command.Execute("success");
 
             Assert.That(flag, Is.True);
         }
 
         [Test]
-        public override void Execute_IsInvokedWithParameter_WhenParameterIsPassedAndPredicateIsTrue()
+        public async override Task Execute_IsInvokedAsyncWithParameter_WhenParameterIsPassed()
+        {
+            var task = new TaskCompletionSource<bool>();
+            var command = CreateCommand(async parameter =>
+            {
+                task.SetResult(parameter == "success");
+                await Task.CompletedTask;
+            });
+
+            Assert.That(task.Task.IsCompleted, Is.False);
+
+            await command.Execute("success");
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(task.Task.IsCompleted, Is.True);
+                Assert.That(task.Task.Result, Is.True);
+            });
+        }
+
+        [Test]
+        public async override Task Execute_IsInvokedWithParameter_WhenParameterIsPassedAndPredicateIsTrue()
         {
             var flag = false;
             var command = CreateCommand(
@@ -322,9 +544,31 @@ namespace CommonUtilitiesCSharp.UnitTests.Core
 
             Assert.That(flag, Is.False);
 
-            command.Execute("success");
+            await command.Execute("success");
 
             Assert.That(flag, Is.True);
+        }
+
+        [Test]
+        public async override Task Execute_IsInvokedAsyncWithParameter_WhenParameterIsPassedAndPredicateIsTrue()
+        {
+            var task = new TaskCompletionSource<bool>();
+            var command = CreateCommand(async parameter =>
+            {
+                task.SetResult(parameter == "success");
+                await Task.CompletedTask;
+            },
+            parameter => parameter != "fail");
+
+            Assert.That(task.Task.IsCompleted, Is.False);
+
+            await command.Execute("success");
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(task.Task.IsCompleted, Is.True);
+                Assert.That(task.Task.Result, Is.True);
+            });
         }
         #endregion Execute
 
