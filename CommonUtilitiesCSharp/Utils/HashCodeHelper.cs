@@ -38,8 +38,8 @@ namespace CommonUtilitiesCSharp.Utils
         /// <exception cref="InvalidOperationException">Thrown to avoid accidental misuse of the method, when the given argument array contains a single enumerable of values, whereas it would be expected to combine the values within that enumerable instead.</exception>
         public static int CombineSequence<T>(params T[] values)
         {
-            if (values.Length == 1 && values is IEnumerable) // This is not ideal and goes against some conventions, but it's the best way to avoid accidental misuse.
-                throw new InvalidOperationException($"Method cannot be used with a single {nameof(IEnumerable)} parameter to avoid misuse. The generic type {nameof(T)} must be specified manually.");
+            if (values.Length == 1 && values[0] is IEnumerable)
+                throw new InvalidOperationException($"Method called with a single {nameof(IEnumerable)} parameter. This is blocked to avoid unintended behaviour. Specify the generic type {nameof(T)} manually to obtain the correct behaviour.");
 
             return CombineSequence(values.AsEnumerable());
         }
